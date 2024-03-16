@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Recharge</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+
+        tr:hover {
+            background-color: #ddd;
+        }
+
+        .success {
+            background-color: #d4edda;
+        }
+
+        .FAIL {
+            background-color: #f8d7da;
+        }
+
+        .Pending {
+            background-color: #fff3cd;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            
+        }
+
+        .alert {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 9999;
+        }
+
+        .tabs {
+            width: 400px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab {
+            display: none;
+            padding: 20px;
+        }
+
+        .active {
+            display: block;
+        }
+
+        .tab-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .tab-header img {
+            width: 50px;
+            height: 50px;
+            margin-right: 10px;
+        }
+
+        select,
+        input[type="text"],
+        input[type="submit"] {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        #balance {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background-color: #007bff;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        input[type="submit"] {
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1 id="balance">Balance: {{balance}} My IP : {{host}}</h1>
+    <div class="tabs">
+        <div class="tab-header">
+            <img src="/static/mobile_icon.png" alt="Mobile Icon">
+            <span onclick="openTab('mobileTab')">Mobile Recharge</span>
+        </div>
+        <div id="mobileTab" class="tab active">
+            <form id="mobileRechargeForm">
+                <label for="operatorDropdown">Mobile Operator:</label>
+                <select id="operatorDropdown" name="operator_code">
+                    <option value="10">Airtel</option>
+                    <option value="11">BSNL - Special Tariff</option>
+                    <option value="12">BSNL - Talktime</option>
+                    <option value="13">MTNL - Talktime</option>
+                    <option value="14">Reliance Jio</option>
+                    <option value="15">VI</option>
+                    <option value="21">MTNL - Special Tariff</option>
+                </select>
+                <label for="number">Number:</label>
+                <input type="text" id="number" name="number">
+                <label for="amount">Amount:</label>
+                <input type="text" id="amount" name="amount">
+                <input type="button" value="Recharge" onclick="submitMobileRecharge()">
+            </form>
+        </div>
+        <div class="tab-header">
+            <img src="/static/dth_icon.png" alt="DTH Icon">
+            <span onclick="openTab('dthTab')">DTH Recharge</span>
+        </div>
+        <div id="dthTab" class="tab">
+            <form id="dthRechargeForm">
+                <label for="dthOperatorDropdown">DTH Operator:</label>
+                <select id="dthOperatorDropdown" name="operator_code">
+                    <option value="16">Airtel Digital TV</option>
+                    <option value="17">Dish TV</option>
+                    <option value="18">Sun Direct</option>
+                    <option value="19">Tata Sky</option>
+                    <option value="20">Videocon d2h</option>
+                </select>
+                <label for="dthNumber">Number:</label>
+                <input type="text" id="dthNumber" name="number">
+                <label for="dthAmount">Amount:</label>
+                <input type="text" id="dthAmount" name="amount">
+                <input type="button" value="Recharge" onclick="submitDthRecharge()">
+            </form>
+            
+        </div>
+        <div class="tab-header">
+            <img src="/static/report.png" alt="Report Icon">
+            <span onclick="openTab('report')">Report</span>
+        </div>
+        <div id="report" class="tab">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Message</th>
+                        <th>Number</th>
+                        <th>Created At</th>
+                        <!-- Add other table headers here -->
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for transaction in transactions %}
+                    <tr class="{{ transaction.status }}">
+                        <td>{{ transaction.status }}</td>
+                        <td>{{ transaction.message }}</td>
+                        <td>{{ transaction.number }}</td>
+                        <td>{{ transaction.created_at }}</td>
+                        <!-- Add other table data here -->
+                    </tr>
+                    {% endfor %}
+                </tbody>
+         </div>
+    </div>
+ 
+    <!-- Alert Box -->
+    <div id="alertBox" class="alert" style="display:none;">
+        <span id="alertMessage"></span>
+    </div>
+    
+    <script>
+        function openTab(tabName) {
+            var tabcontent = document.getElementsByClassName("tab");
+            for (var i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            document.getElementById(tabName).style.display = "block";
+        }
+
+        function showAlert(message) {
+            var alertBox = document.getElementById("alertBox");
+            var alertMessage = document.getElementById("alertMessage");
+            alertMessage.innerText = message;
+            alertBox.style.display = "block";
+            setTimeout(function() {
+                alertBox.style.display = "none";
+            }, 5000); // Hide after 3 seconds
+        }
+
+        function makeRequest(url, callback) {
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        var response = JSON.parse(xhr.responseText);
+                        callback(response);
+                    } else {
+                        showAlert('Error: ' + xhr.status);
+                    }
+                }
+            };
+            xhr.open('GET', url, true);
+            xhr.send();
+        }
+
+        function submitMobileRecharge() {
+            var form = document.getElementById("mobileRechargeForm");
+            var operator = form.elements["operator_code"].value;
+            var number = form.elements["number"].value;
+            var amount = form.elements["amount"].value;
+            var url = "/recharge?username=akshay&apitocken=12345&operator_code=" + operator + "&number=" + number + "&amount=" + amount + "&transid=123456";
+            makeRequest(url, function(response) {
+                showAlert(JSON.stringify(response));
+                var stateObject = { page: "recharge" };
+                var title = "Recharge";
+                });
+        }
+
+        function submitDthRecharge() {
+            var form = document.getElementById("dthRechargeForm");
+            var operator = form.elements["operator_code"].value;
+            var number = form.elements["number"].value;
+            var amount = form.elements["amount"].value;
+            var url = "/recharge?username=akshay&apitocken=12345&operator_code=" + operator + "&number=" + number + "&amount=" + amount + "&transid=123456";
+            makeRequest(url, function(response) {
+                showAlert(JSON.stringify(response));
+                var stateObject = { page: "recharge" };
+                var title = "Recharge";
+                });
+        }
+    </script>
+</body>
+</html>
