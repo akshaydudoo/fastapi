@@ -6,6 +6,7 @@
 fastapi
 uvicorn
 requests
+mysql
 sqlmodel
 typer
 dynaconf
