@@ -4,10 +4,10 @@ import mysql.connector
 def create_connection():
     try:
         connection = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password="",
-            database="api"
+            host="193.203.184.9",
+            user="u862584388_aadish",
+            password="Aadish@1008",
+            database="u862584388_aadish"
         )
         print("Connected to the MySQL database")
         return connection
