@@ -7,12 +7,9 @@ from recharge import initiate_transaction,get_user_info,update_user_balance
 from db import create_connection,close_connection
 from updatetrx import add_transaction,update_transaction
 from fastapi.staticfiles import StaticFiles
-import subprocess
+
 
 import uuid
-
-def run_uvicorn():
-    subprocess.run(["uvicorn", "main:app", "--port", "3000"])
 
 
 userid = 12680
@@ -101,8 +98,3 @@ async def report(request: Request):
 
     return templates.TemplateResponse("report.html", {"request": request, "transactions": transactions})
 
-if __name__ == "__main__":
-    while True:
-        run_uvicorn()
-        # Sleep for 5 seconds before restarting uvicorn
-        time.sleep(5)
