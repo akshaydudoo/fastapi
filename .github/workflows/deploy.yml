@@ -19,10 +19,6 @@ jobs:
           sudo apt install -y python3 python3-pip
           pip3 install -r requirements.txt
 
-      - name: Terminate previous FastAPI process
-        run: |
-          pkill -f "uvicorn main:app"
-
       - name: Run FastAPI application
         run: |
           nohup uvicorn main:app --host 0.0.0.0 --port 8000 > app.log 2>&1 &
