@@ -1,5 +1,5 @@
 from typing import Union
-from fastapi import FastAPI, Form, Request,HTTPException
+from fastapi import Header,FastAPI, Form, Request,HTTPException
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from mybalance import check_balance
@@ -69,6 +69,7 @@ async def recharge(username: str, apitocken:str, operator_code:int, number: str,
                 update_transaction(connection, cursor,status,message,balance,optrid,refid,mergin,transid,updated_margin)
 
                 close_connection(connection)
+                print(recharge)
                 return {"success":recharge}
             else:
                 
@@ -81,6 +82,7 @@ async def recharge(username: str, apitocken:str, operator_code:int, number: str,
                 balance=recharge['balance']
                 update_transaction(connection, cursor,status,message,balance,optrid,refid,mergin,transid,updated_margin)
                 close_connection(connection)
+                print(recharge)
                 return {"error" : recharge}
         else:
             return{"error": "Insufficient balance","TrxID" : transid}
@@ -98,3 +100,6 @@ async def report(request: Request):
 
     return templates.TemplateResponse("report.html", {"request": request, "transactions": transactions})
 
+@app.get('/ip')
+def index(real_ip: str = Header(None, alias='X-Real-IP')):
+    return real_ip

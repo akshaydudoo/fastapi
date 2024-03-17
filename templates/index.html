@@ -189,6 +189,7 @@
                         <td>{{ transaction.message }}</td>
                         <td>{{ transaction.number }}</td>
                         <td>{{ transaction.created_at }}</td>
+                        <td>{{ transaction.created_at }}</td>
                         <!-- Add other table data here -->
                     </tr>
                     {% endfor %}
@@ -243,9 +244,8 @@
             var amount = form.elements["amount"].value;
             var url = "/recharge?username=akshay&apitocken=12345&operator_code=" + operator + "&number=" + number + "&amount=" + amount + "&transid=123456";
             makeRequest(url, function(response) {
+                console.log(response);
                 showAlert(JSON.stringify(response));
-                var stateObject = { page: "recharge" };
-                var title = "Recharge";
                 });
         }
 
@@ -257,8 +257,7 @@
             var url = "/recharge?username=akshay&apitocken=12345&operator_code=" + operator + "&number=" + number + "&amount=" + amount + "&transid=123456";
             makeRequest(url, function(response) {
                 showAlert(JSON.stringify(response));
-                var stateObject = { page: "recharge" };
-                var title = "Recharge";
+               
                 });
         }
     </script>
