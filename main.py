@@ -101,5 +101,5 @@ async def report(request: Request):
     return templates.TemplateResponse("report.html", {"request": request, "transactions": transactions})
 
 @app.get('/ip')
-def index(real_ip: str = Header(None, alias='X-Real-IP')):
+def index(real_ip: str = Header(None, alias='Forwarded')):
     return real_ip
