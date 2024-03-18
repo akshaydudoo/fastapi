@@ -7,7 +7,7 @@ from recharge import initiate_transaction,get_user_info,update_user_balance
 from db import create_connection,close_connection
 from updatetrx import add_transaction,update_transaction
 from fastapi.staticfiles import StaticFiles
-
+from mysql.connector import Error
 
 import uuid
 
@@ -103,3 +103,29 @@ async def report(request: Request):
 @app.get('/ip')
 def index(real_ip: str = Header(None, alias='Forwarded')):
     return real_ip
+
+@app.post("/signin")
+async def sign_in(username: str = Form(...), password: str = Form(...)):
+    # Establish a connection to the MySQL database
+    connection = create_connection()
+    cursor = connection.cursor(dictionary=True)
+    
+    try:
+        # Query the database to check if the provided username and password match any user record
+        query = "SELECT * FROM users WHERE username = %s AND password = %s"
+        cursor.execute(query, (username, password))
+        user = cursor.fetchone()
+        
+        if user:
+            # User authentication successful
+            return {"message": "Sign-in successful"}
+        else:
+            # Invalid username or password
+            raise HTTPException(status_code=401, detail="Invalid username or password")
+    except Error as e:
+        # Handle database error
+        print(f"Database error: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+    finally:
+        # Close the database connection
+        close_connection(connection)
