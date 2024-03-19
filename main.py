@@ -85,9 +85,9 @@ async def recharge(username: str, apitocken:str, operator_code:int, number: str,
                 print(recharge)
                 return {"error" : recharge}
         else:
-            return{"error": "Insufficient balance","TrxID" : transid}
+            return{"error":{"status": "FAIL","message": "Insufficient balance","transid":transid}}
     else:            
-        return {"error":"User account is inactive"}
+        return {"error":{"status": "FAIL","message": "User Account is in Active","transid":transid}}
     
 @app.get("/report", response_class=HTMLResponse)
 async def report(request: Request):
