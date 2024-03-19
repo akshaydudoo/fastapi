@@ -1,5 +1,5 @@
 from typing import Union
-from fastapi import Header,FastAPI, Form, Request,HTTPException
+from fastapi import Header,FastAPI, Form, Request,HTTPException,Query
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from mybalance import check_balance
@@ -129,3 +129,21 @@ async def sign_in(username: str = Form(...), password: str = Form(...)):
     finally:
         # Close the database connection
         close_connection(connection)
+
+@app.get("/user_transitions/")
+async def get_user_transitions(user: str = Query(..., description="User name"), 
+                               limit: int = Query(..., description="Number of records to retrieve")):
+    # Connect to the database
+    connection = create_connection()
+    if not connection:
+        return {"error": "Failed to connect to the database"}
+    
+    cursor = connection.cursor(dictionary=True)
+    
+    query = "SELECT transition FROM transitions WHERE user = %s ORDER BY id DESC LIMIT %s"
+    cursor.execute(query, (user, limit))
+    transitions = cursor.fetchall()
+    
+    close_connection(connection)
+
+    return transitions
