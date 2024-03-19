@@ -140,7 +140,7 @@ async def get_user_transitions(user: str = Query(..., description="User name"),
     
     cursor = connection.cursor(dictionary=True)
     
-    query = "SELECT transition FROM transitions WHERE user = %s ORDER BY id DESC LIMIT %s"
+    query = "SELECT * FROM transactions WHERE user_name = %s ORDER BY id DESC LIMIT %s"
     cursor.execute(query, (user, limit))
     transitions = cursor.fetchall()
     
