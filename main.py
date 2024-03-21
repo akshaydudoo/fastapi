@@ -1,17 +1,12 @@
-import datetime
+
 import json
-from typing import Union
 from fastapi import Header,FastAPI, Form, Request,HTTPException,Query
-from fastapi.responses import HTMLResponse
-from fastapi.templating import Jinja2Templates
-from flask import jsonify
-from requests import request
 import requests
 from mybalance import check_balance_re,check_mobile_balance
 from recharge import initiate_transaction,get_user_info,update_user_balance
 from db import create_connection,close_connection
 from updatetrx import add_transaction,update_transaction
-from fastapi.staticfiles import StaticFiles
+
 from mysql.connector import Error
 
 
@@ -262,8 +257,6 @@ async def add_balance(username: str,amount: int,payment_method: str,trx_id: str,
     if connection:
         try:
             cursor = connection.cursor()
-            # current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            
             # Insert balance into balances table
             balance_query = "INSERT INTO add_balance (username, amount, payment_method, trx_id, status, updated_by) VALUES (%s, %s, %s, %s, %s, %s)"
             cursor.execute(balance_query, (username, amount, payment_method, trx_id, status, updated_by))
