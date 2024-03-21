@@ -11,7 +11,6 @@ def initiate_transaction(userid, token, opcode, number, amount, transid):
         'amount': amount,
         'transid': transid
     }
-
     try:
         response = requests.get(url, params=payload)
         data = response.json()

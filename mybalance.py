@@ -1,6 +1,6 @@
 import requests
 
-def check_balance(userid, token):
+def check_balance_re(userid, token):
     url = f"https://status.rechargeexchange.com/API.asmx/BalanceNew?userid={userid}&token={token}"
     
     try:
@@ -19,3 +19,16 @@ def check_balance(userid, token):
             print(f"Failed to retrieve balance. Status code: {response.status_code}")
     except Exception as e:
         print(f"An error occurred: {str(e)}")
+
+def check_mobile_balance(mobile_number, api_key):
+    url = f"https://www.payoneapi.com/RechargeAPI/RechargeAPI.aspx?MobileNo={mobile_number}&APIKey={api_key}&REQTYPE=BAL&RESPTYPE=JSON"
+    response = requests.get(url)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        # Handle errors
+        return {"error": f"Failed to fetch balance. Status code: {response.status_code}"}
+
+# Example usage:
+
+
