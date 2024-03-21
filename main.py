@@ -284,3 +284,9 @@ def load_json_file(file_path):
     with open(file_path, 'r') as file:
         data = json.load(file)
     return data
+
+@app.get("/user_balance/")
+async def get_user_balance(username:str,apitocken:str):
+    connection=create_connection()
+    user_info = get_user_info(connection, username,apitocken)
+    return user_info['balance']
